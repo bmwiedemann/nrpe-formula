@@ -1,0 +1,17 @@
+{% set map = {
+    'Debian': {
+        'service': 'nrpe',
+        'server': 'nagios-nrpe-server',
+    },
+    'Suse': {
+        'service': 'nrpe',
+        'server': 'nrpe',
+    },
+} %}
+
+{% set saltversion=grains.get('saltversion', '') %}
+{% if saltversion.startswith('0.17') or saltversion.startswith('2') %} {# y3k problem #}
+{% set nrpe = salt['grains.filter_by'](map, merge=salt['pillar.get']('nrpe:lookup')) %}
+{% else %}
+{% set nrpe = map.get(grains.os_family) %}
+{% endif %}
